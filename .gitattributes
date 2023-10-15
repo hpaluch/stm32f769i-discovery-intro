@@ -1,0 +1,8 @@
+# .gitattributes
+# always use Unix LF
+.gitattributes eol=lf
+.gitignore eol=lf
+*.ld text eol=lf
+# anomaly in using CRLF vs LF
+#Core/Src/syscalls.c text eol=lf
+#Core/Src/sysmem.c text eol=lf
