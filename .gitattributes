@@ -4,5 +4,5 @@
 .gitignore eol=lf
 *.ld text eol=lf
 # anomaly in using CRLF vs LF
-#Core/Src/syscalls.c text eol=lf
-#Core/Src/sysmem.c text eol=lf
+/Disco1_GPIO/Core/Src/syscalls.c text eol=lf
+/Disco1_GPIOCore/Src/sysmem.c text eol=lf
