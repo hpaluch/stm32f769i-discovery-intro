@@ -103,8 +103,8 @@ void Error_Handler(void);
 #define FMC_SDNCAS_GPIO_Port GPIOG
 #define RMII_TX_EN_Pin GPIO_PIN_11
 #define RMII_TX_EN_GPIO_Port GPIOG
-#define LD_USER1_Pin GPIO_PIN_13
-#define LD_USER1_GPIO_Port GPIOJ
+#define LD_USER1_RED_Pin GPIO_PIN_13
+#define LD_USER1_RED_GPIO_Port GPIOJ
 #define Audio_INT_Pin GPIO_PIN_12
 #define Audio_INT_GPIO_Port GPIOJ
 #define uSD_CLK_Pin GPIO_PIN_6
@@ -281,8 +281,8 @@ void Error_Handler(void);
 #define EXT_SCL_GPIO_Port GPIOG
 #define FMC_A12_Pin GPIO_PIN_2
 #define FMC_A12_GPIO_Port GPIOG
-#define LD_USER2_Pin GPIO_PIN_5
-#define LD_USER2_GPIO_Port GPIOJ
+#define LD_USER2_GREEN_Pin GPIO_PIN_5
+#define LD_USER2_GREEN_GPIO_Port GPIOJ
 #define D20_Pin GPIO_PIN_12
 #define D20_GPIO_Port GPIOH
 #define RMII_REF_CLK_Pin GPIO_PIN_1

@@ -18,21 +18,34 @@ Required hardware:
 
 Required software:
 * [STM32CubeMX][STM32CubeMX] tested v6.9.2 - code generator - all projects here are generated with this tool
-* [STM32CubeIDE-Win][STM32CubeIDE-Win] - development IDE
+* [STM32CubeIDE-Win][STM32CubeIDE-Win] teste v1.13.2 - development IDE
 * [STM32CubeProg][STM32CubeProg] - for some projects `STM32 Cube Programmer` will be required
   to write data to external Flash (CubeIDE is not able to do this)
-* `STM32Cube_FW_F7_V1.17.1` tree unpacked  and renamed as under `c:\ST\STM32Cube_FW_F7` - I will often use it for reference.
-   Visit page: https://www.st.com/en/embedded-software/stm32cubef7.html
-   Download both `en.stm32cubef7_v1-17-0.zip` and `en.stm32cubef7-v1-17-1.zip` and
-   unpack them in that order overwriting older files. My projects will reference 
-   CubeF7 files under - so you need `c:\ST\STM32Cube_FW_F7` to build these projects. I would
-   prefer to point to CubeF7 tree using Eclipse variable but CubeMX seems to not offer this option.
+
+NOTE: When you run STM32CubeMX for the first time you have to:
+- select Help -> Managed embedded software packages
+- select tab `STM32Cube MCU Packages`
+- expand `STM32F7`
+- select and install `STM32Cube MCU Package for STM32F7 Series` version 1.17.1
+- try to use target folder `c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1` otherwise
+  you will have issues when building my projects under  STM32CubeIDE.
 
 # Projects
 
-Here is list of projects (planned):
-1. GPIO Tutorial - LED and Switch. Rationale: LEDs provide early feedback is system is alive and when something
+Common project properties:
+- LED `LD1_USER` RED will be on when `Error_Handler()` in `main.c` is called,
+  which means "fatal error, system halted"
+
+Here is list of projects:
+Finished projects:
+1. GPIO Tutorial - LED and Switch.
+   Rationale: LEDs provide early feedback is system is alive and when something
    goes wrong.
+   - What it does: slowly blinking Green LED. When you push Blue user button that
+     Green LED will blink faster.
+   - measured consumption: 4.89V, 0.25A => 1.22W
+
+Planned projects:
 2. UART1 Tutorial - redirect `printf(3)` to UART1 which is connected to Virtual COM port of ST-LINK.
    Rationale: UART is perfect tool for diagnostics and error messages.
 3. LCD Display simple demo. LCD is perfect for feedback and interactivity
@@ -43,7 +56,7 @@ Here is list of projects (planned):
 Because I plan to use external SDRAM in future projects - I'm limited to 200 MHz max CPU frequency.
 Here is quote:
 ```
-// c:\ST\STM32Cube_FW_F7\Projects\STM32F769I-Discovery\Examples\BSP\readme.txt
+// c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1\Projects\STM32F769I-Discovery\Examples\BSP\readme.txt
 
 @note The STM32F7xx devices can reach a maximum clock frequency of 216MHz but as this example uses SDRAM,
       the system clock is limited to 200MHz. Indeed proper functioning of the SDRAM is only guaranteed
@@ -52,7 +65,7 @@ Here is quote:
 
 Here is recommended setup for STM32CubeF7 firmware:
 ```c
-// c:\ST\STM32Cube_FW_F7\Projects\STM32F769I-Discovery\Examples\BSP\Src\main.c
+// c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1\Projects\STM32F769I-Discovery\Examples\BSP\Src\main.c
 
 /**
   * @brief  System Clock Configuration
