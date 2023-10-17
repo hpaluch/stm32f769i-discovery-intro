@@ -178,8 +178,9 @@ void Error_Handler(void)
   // from: STM32Cube_FW_F7_V1.17.1\Projects\STM32F769I-Discovery\Examples\BSP\Src\main.c
   /* Turn RED LED ON */
   HAL_GPIO_WritePin(LD_USER1_RED_GPIO_Port, LD_USER1_RED_Pin, GPIO_PIN_SET);
-  /* Turn GREEN LED OFF */
+  /* Turn GREEN LEDs OFF */
   HAL_GPIO_WritePin(LD_USER2_GREEN_GPIO_Port, LD_USER2_GREEN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_RESET);
   while (1)
   {
   }
