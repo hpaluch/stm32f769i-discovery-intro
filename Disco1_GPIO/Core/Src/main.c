@@ -86,7 +86,8 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-
+  // make LD3 Green on PA12 inversion of LD_USER2
+  HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -94,6 +95,7 @@ int main(void)
   while (1)
   {
 	HAL_GPIO_TogglePin(LD_USER2_GREEN_GPIO_Port, LD_USER2_GREEN_Pin);
+	HAL_GPIO_TogglePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin);
 	if (HAL_GPIO_ReadPin(B_USER_GPIO_Port, B_USER_Pin)== GPIO_PIN_SET){
 		// when blue user button is pressed - blink faster.
 		HAL_Delay(100);

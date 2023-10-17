@@ -38,18 +38,25 @@ Common project properties:
 
 Here is list of projects:
 Finished projects:
-1. GPIO Tutorial - LED and Switch.
+1. GPIO Tutorial - LEDs and Switch.
    Rationale: LEDs provide early feedback is system is alive and when something
    goes wrong.
-   - What it does: slowly blinking Green LED. When you push Blue user button that
-     Green LED will blink faster.
+   - What it does:
+     - blinking `LD_USER2 Green LED` and inverted blinking `LD3 Green LED` on PA12
+     - when you push Blue user button both Green LEDs will blink faster as long as button is held.
    - measured consumption: 4.89V, 0.25A => 1.22W
+   - used hardware:
+     - `LD_USER1` (LD1) red LED on PJ13
+     - `LD_USER2` (LD2) green LED on PJ5
+     - LD3 green LED on PA12 (also used for used for Arduino as `SCK/D13`)
+     -`B_USER` "User & WakeUp Button" on PA0
 
 Planned projects:
 2. UART1 Tutorial - redirect `printf(3)` to UART1 which is connected to Virtual COM port of ST-LINK.
    Rationale: UART is perfect tool for diagnostics and error messages.
 3. LCD Display simple demo. LCD is perfect for feedback and interactivity
 4. Audio setup: will be used for demos
+And more...
 
 # Notes
 

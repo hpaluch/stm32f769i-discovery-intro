@@ -58,7 +58,6 @@
      PD0   ------> FMC_D2_DA2
      PC11   ------> S_DATAIN5DFSDM1
      PC10   ------> QUADSPI_BK1_IO1
-     PA12   ------> SPI2_SCK
      PI4   ------> FMC_NBL2
      PG12   ------> SPDIFRX_IN1
      PG10   ------> SDMMC2_D1
@@ -182,6 +181,9 @@ void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOJ, LD_USER1_RED_Pin|LD_USER2_GREEN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : PEPin PEPin PEPin PEPin */
   GPIO_InitStruct.Pin = SAI1_FSA_Pin|SAI1_SDB_Pin|SAI1_SCKA_Pin|SAI1_SDA_Pin;
@@ -337,12 +339,11 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = ARD_D13_SCK_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pin = LD3_GREEN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
-  HAL_GPIO_Init(ARD_D13_SCK_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(LD3_GREEN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PIPin PIPin PIPin PIPin */
   GPIO_InitStruct.Pin = NC4_Pin|NC5_Pin|uSD_Detect_Pin|LCD_BL_CTRL_Pin;

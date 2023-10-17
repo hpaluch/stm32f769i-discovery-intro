@@ -115,8 +115,8 @@ void Error_Handler(void);
 #define DFSDM_DATIN5_GPIO_Port GPIOC
 #define QSPI_D1_Pin GPIO_PIN_10
 #define QSPI_D1_GPIO_Port GPIOC
-#define ARD_D13_SCK_Pin GPIO_PIN_12
-#define ARD_D13_SCK_GPIO_Port GPIOA
+#define LD3_GREEN_Pin GPIO_PIN_12
+#define LD3_GREEN_GPIO_Port GPIOA
 #define NC4_Pin GPIO_PIN_8
 #define NC4_GPIO_Port GPIOI
 #define FMC_NBL2_Pin GPIO_PIN_4
