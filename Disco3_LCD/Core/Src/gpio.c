@@ -50,7 +50,6 @@
      PE6   ------> SAI1_SD_A
      PG13   ------> ETH_TXD0
      PB9   ------> I2C1_SDA
-     PB7   ------> I2C4_SDA
      PB6   ------> QUADSPI_BK1_NCS
      PG15   ------> FMC_SDNCAS
      PG11   ------> ETH_TX_EN
@@ -117,7 +116,6 @@
      PF12   ------> FMC_A6
      PG1   ------> FMC_A11
      PF15   ------> FMC_A9
-     PD12   ------> I2C4_SCL
      PD13   ------> QUADSPI_BK1_IO3
      PG2   ------> FMC_A12
      PH12   ------> FMC_D20
@@ -268,14 +266,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF4_CEC;
   HAL_GPIO_Init(CEC_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = AUDIO_SDA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF11_I2C4;
-  HAL_GPIO_Init(AUDIO_SDA_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = QSPI_NCS_Pin;
@@ -557,14 +547,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF9_QUADSPI;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = AUDIO_SCL_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF4_I2C4;
-  HAL_GPIO_Init(AUDIO_SCL_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = QSPI_D3_Pin;

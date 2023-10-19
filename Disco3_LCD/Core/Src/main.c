@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -36,6 +37,11 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define APP_VERSION 100 // 123=1.23
+// Audio codec I2C4 slave address - from STM32Cube_FW_F7\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery.h
+#define APP_AUDIO_I2C_ADDRESS                ((uint16_t)0x34)
+// read codec ID after reset, must be 8994h
+#define APP_WM8994_CHIPID_ADDR                  0x00
+#define APP_EXP_WM8994_CHIPID 0x8994U
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -78,6 +84,8 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   unsigned loopCount = 0;
+  HAL_StatusTypeDef i2cStatus;
+  uint16_t audioI2cData;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,11 +107,40 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+  MX_I2C4_Init();
   /* USER CODE BEGIN 2 */
   gUartStarted=true; // tell Error_Handler() that it can dump error on UART
   // enable LD3 Green on PA12
   HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_RESET);
   printf("L%d: %s init v%d.%02d\r\n", __LINE__, APP_NAME, APP_VERSION/100, APP_VERSION%100);
+
+  // trying to ping Audio CODEC on I2C
+  // RESET Audio Codec
+  audioI2cData = 0;
+  i2cStatus = HAL_I2C_Mem_Write(&hi2c4, APP_AUDIO_I2C_ADDRESS, 0x0,
+		  	  	  	  	  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
+  if (i2cStatus == HAL_OK){
+	  printf("OK: Audio Codec accepted reset at I2C Addr=0x%x\r\n",APP_AUDIO_I2C_ADDRESS);
+  } else {
+	  printf("ERROR: Codec not responding at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
+	  Error_Handler();
+  }
+
+  HAL_Delay(300);
+  audioI2cData = 0;
+  i2cStatus = HAL_I2C_Mem_Read(&hi2c4, APP_AUDIO_I2C_ADDRESS, APP_WM8994_CHIPID_ADDR,
+		  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
+  if (i2cStatus != HAL_OK){
+	  printf("ERROR: Error reading ID from Codec at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
+	  Error_Handler();
+  }
+  // FIXME: Little-endian vs Big-endian - it is now wrong!
+  printf("Codec ID is 0x%x (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
+  if (audioI2cData != APP_EXP_WM8994_CHIPID){
+	  printf("ERROR: Codec ID is 0x%x is wrong! (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
+	  Error_Handler();
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
