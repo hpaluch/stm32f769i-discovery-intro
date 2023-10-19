@@ -8,3 +8,5 @@
 /Disco1_GPIOCore/Src/sysmem.c text eol=lf
 /Disco2_UART/Core/Src/syscalls.c text eol=lf
 /Disco2_UART/Core/Src/sysmem.c text eol=lf
+/Disco3_LCD//Core/Src/syscalls.c text eol=lf
+/Disco3_LCD/Core/Src/sysmem.c text eol=lf
