@@ -6,6 +6,20 @@ with the final goal being able to use LCD, Audio Codec and accessories (SD card,
 If you are new to [32F769IDISCOVERY Discovery kit][32F769IDISCOVERY] I suggest
 reading [Getting started with STM 32F769IDISCOVERY][GS32F769IDISCOVERY] first.
 
+CubeMX vs LCD Examples:
+
+Unfortunately just found that existing LCD Examples are not supported by CubeMX as shown below:
+
+![LCD Examples incompatible with CubeMX](https://github.com/hpaluch/hpaluch.github.io/wiki/files/stm32/cubemx-lcd-ex-incompat.jpg)
+
+Details can be found on [My Wiki page](https://github.com/hpaluch/hpaluch.github.io/wiki/Getting-started-with-32F769IDISCOVERY#cubemx-warning).
+
+It means that I have to choice one of:
+
+1. clone example code, but add or modify or hardware components manually
+2. use CubeMX but duplicate BSP code for LCD and possibly other components (LCD, Audio,...)
+
+
 CubeMX vs BSP:
 - sometimes there are 2 ways how to handle specific hardware (for example GPIO)
 
@@ -13,9 +27,10 @@ CubeMX vs BSP:
 2. use code from BSP (Board Specific Package) - drivers and functions designed for
    specific board)
 
-In case of GPIO and UART I decided to use "a)". However in case of TFT-LCD it
-will be more challenging and it will require thorough research if CubeMX
-contains proper support for display or I will have to use BSP as only option.
+In case of GPIO and UART I decided to use "a)". However (as stated in above
+text) in case of TFT-LCD it will be more challenging and it will require
+thorough research if CubeMX contains proper support for display or I will have
+to use BSP as only option.
 
 # Requirements
 
@@ -92,10 +107,15 @@ Finished projects:
     when compared to other GPIO Pins - required when configured for USB).
     Thus I rather left default - `VCP_RX` without Pull-Up
 
+Projects in progress:
+3. TODO
+
 Planned projects:
 3. LCD Display simple demo. LCD is perfect for feedback and interactivity
 4. Audio setup: will be used for demos
-And more...
+
+But it will be challenging to use CubeMX for it, because existing LCD examples
+are not compatible with CubeMX and they use BSP routines that often clashes with CubeMX.
 
 # Notes
 
