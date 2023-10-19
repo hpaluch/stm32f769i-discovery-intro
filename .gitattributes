@@ -6,3 +6,5 @@
 # anomaly in using CRLF vs LF
 /Disco1_GPIO/Core/Src/syscalls.c text eol=lf
 /Disco1_GPIOCore/Src/sysmem.c text eol=lf
+/Disco2_UART/Core/Src/syscalls.c text eol=lf
+/Disco2_UART/Core/Src/sysmem.c text eol=lf
