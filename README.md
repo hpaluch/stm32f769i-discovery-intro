@@ -118,7 +118,16 @@ Projects in progress:
 
 # Configuring SDRAM
 
-Needed for LCD
+Needed as graphics RAM for LCD and other stuff. SDRAM has impressive 16MB -
+frequency is limited to 200 MHz (CPU is capable of 216 MHz).
+
+SDRAM needs:
+- FMC (Flexible Memory Controller)
+- MPU (Memory protection Unit) - to configure SDRAM region and FMC registers
+
+SDRAM requires following CubeMX components
+- System Core -> `CORTEX_M7` -> MPU - defines SDRAM region and FMC region
+- Connectivity -> `FMC` -> `SDRAM 1`
 
 Goal is to use CubeMX to initialize SDRAM same way as in BSP
 - there are 2 SDRAM controllers (see RM0410 Rev 4, page 336)
@@ -137,9 +146,6 @@ Goal is to use CubeMX to initialize SDRAM same way as in BSP
 ```
 So `SDRAM_DEVICE_ADDR` coresponds to SDRAM1.
 
-In CubeMX we have to use:
-- `FMC`
--  TODO
 
 Limitations: 
 - WriteRecoveryTime - CubeMX requires >=3 while BSP uses 2
@@ -152,6 +158,12 @@ MPU_Config();
 - can be found in CubeMX under System Core -> `CORTEX_M7`
 - Why? SDRAM is configured as Write-through
 
+WARNING! Currently SDRAM can't be used for Heap or Stack, because it must be
+enabled on early Startup (before `main()`). For details
+see `DATA_IN_ExtSDRAM` macro in all `*.[hcs]` files under:
+```
+c:\Ac6\STM32Cube_FW_F7_V1.17.0\Projects\STM32F769I-Discovery\Examples\BSP
+```
 
 # Planned projects
 
