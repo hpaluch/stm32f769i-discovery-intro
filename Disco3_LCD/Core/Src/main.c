@@ -27,6 +27,7 @@
 #include <stdio.h> // printf(3) redirected to UART1, ST-Link Virtual COM port
 #include <inttypes.h> // printf(3) format macros for stdtypes.h, for example PRIu32 to print uint32_t
 #include <stdbool.h> // bool type and true/false
+#include <machine/endian.h> // __bswap16(), __htons(), __ntohs()
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -74,6 +75,44 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// RESETS audio Codec via I2C, see datasheet WM8994_Rev4.6.pdf
+HAL_StatusTypeDef app_reset_audio(void)
+{
+	  HAL_StatusTypeDef i2cStatus;
+	  uint16_t audioI2cData;
+
+	  // RESET Audio Codec
+	  // codec Data must be always in Big-Endian = Network Order (n), using portable Host(h) to Network (n)
+	  audioI2cData = __htons(0); // defined in machine/endian.h
+	  i2cStatus = HAL_I2C_Mem_Write(&hi2c4, APP_AUDIO_I2C_ADDRESS, 0x0,
+			  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
+	  if (i2cStatus == HAL_OK){
+		  printf("OK: Audio Codec accepted reset at I2C Addr=0x%x\r\n",APP_AUDIO_I2C_ADDRESS);
+	  } else {
+		  printf("ERROR: Codec not responding at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
+		  return i2cStatus;
+	  }
+
+	  HAL_Delay(300); // unable to find what is correct timeout after RESET...
+	  // now read back Codec ID, must be 0x8994 (=WM8994)
+	  audioI2cData = 0;
+	  i2cStatus = HAL_I2C_Mem_Read(&hi2c4, APP_AUDIO_I2C_ADDRESS, APP_WM8994_CHIPID_ADDR,
+			  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
+	  if (i2cStatus != HAL_OK){
+		  printf("ERROR: Error reading ID from Codec at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
+		  return i2cStatus;
+	  }
+	  // readback data must be converted back from BE (Network order - 'n') to Host-order 'h' (LE in our case)
+	  audioI2cData = __ntohs(audioI2cData);
+	  printf("Codec ID is 0x%x (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
+	  if (audioI2cData != APP_EXP_WM8994_CHIPID){
+		  printf("ERROR: Codec ID is 0x%x is wrong! (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
+		  return HAL_ERROR;
+	  }
+	  printf("OK: L%d audio codec WM8994 found at I2C Addr=0x%x\r\n",
+			  __LINE__,APP_AUDIO_I2C_ADDRESS);
+	  return HAL_OK;
+}
 /* USER CODE END 0 */
 
 /**
@@ -84,8 +123,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   unsigned loopCount = 0;
-  HAL_StatusTypeDef i2cStatus;
-  uint16_t audioI2cData;
+  HAL_StatusTypeDef status;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -114,30 +152,10 @@ int main(void)
   HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_RESET);
   printf("L%d: %s init v%d.%02d\r\n", __LINE__, APP_NAME, APP_VERSION/100, APP_VERSION%100);
 
-  // trying to ping Audio CODEC on I2C
-  // RESET Audio Codec
-  audioI2cData = 0;
-  i2cStatus = HAL_I2C_Mem_Write(&hi2c4, APP_AUDIO_I2C_ADDRESS, 0x0,
-		  	  	  	  	  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
-  if (i2cStatus == HAL_OK){
-	  printf("OK: Audio Codec accepted reset at I2C Addr=0x%x\r\n",APP_AUDIO_I2C_ADDRESS);
-  } else {
-	  printf("ERROR: Codec not responding at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
-	  Error_Handler();
-  }
-
-  HAL_Delay(300);
-  audioI2cData = 0;
-  i2cStatus = HAL_I2C_Mem_Read(&hi2c4, APP_AUDIO_I2C_ADDRESS, APP_WM8994_CHIPID_ADDR,
-		  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
-  if (i2cStatus != HAL_OK){
-	  printf("ERROR: Error reading ID from Codec at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
-	  Error_Handler();
-  }
-  // FIXME: Little-endian vs Big-endian - it is now wrong!
-  printf("Codec ID is 0x%x (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
-  if (audioI2cData != APP_EXP_WM8994_CHIPID){
-	  printf("ERROR: Codec ID is 0x%x is wrong! (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
+  status = app_reset_audio();
+  if (status != HAL_OK){
+	  printf("ERROR: L%d app_reset_audio() returned HAL_Status=%d !=0\r\n",
+			  __LINE__, status);
 	  Error_Handler();
   }
 
