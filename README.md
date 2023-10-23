@@ -165,6 +165,16 @@ see `DATA_IN_ExtSDRAM` macro in all `*.[hcs]` files under:
 c:\Ac6\STM32Cube_FW_F7_V1.17.0\Projects\STM32F769I-Discovery\Examples\BSP
 ```
 
+TRAP: There must be called initialization from:
+```c
+// c:\Ac6\STM32Cube_FW_F7_V1.17.0\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery_sdram.c 
+void BSP_SDRAM_Initialization_sequence(uint32_t RefreshCount)
+{
+// ...
+}
+```
+See `Disco3_LCD/Core/Src/fmc.c` function `static void APP_BSP_SDRAM_Initialization_sequence(uint32_t RefreshCount)`
+
 # Planned projects
 
 

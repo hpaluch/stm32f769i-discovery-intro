@@ -134,10 +134,10 @@ bool app_test_sdram(int *addr, int bytes, int seed)
 			printf(" %d",v);
 		} else if (i==7){
 			printf("...\r\n");
-		} else {
+		} /* else { // noisy
 			printf(" i=%d",i);
 			fflush(stdout);
-		}
+		}*/
 		addr[i] = v;
 	}
 	printf("L%d SDRAM - reading back data...\r\n",__LINE__);
@@ -196,18 +196,15 @@ int main(void)
   HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_RESET);
   printf("L%d: %s init v%d.%02d\r\n", __LINE__, APP_NAME, APP_VERSION/100, APP_VERSION%100);
 
-  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, 256 /*APP_SDRAM_DEVICE_SIZE*/ ,1)){
+  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, 32768 /*APP_SDRAM_DEVICE_SIZE*/ ,1)){
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
 	  Error_Handler();
   }
-#if 0
   // try different seed to ensure that we are not reading old (good) data...
   if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, 32768 /*APP_SDRAM_DEVICE_SIZE*/ ,10)){
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
 	  Error_Handler();
   }
-#endif
-
 
   status = app_reset_audio();
   if (status != HAL_OK){
