@@ -101,6 +101,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_rcc_ex.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_sdram.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_sdram.c</locationURI>
+		</link>
+		<link>
 			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_tim.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_tim.c</locationURI>
@@ -119,6 +124,11 @@
 			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_uart_ex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_uart_ex.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_ll_fmc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_ll_fmc.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

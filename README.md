@@ -116,6 +116,46 @@ Projects in progress:
    - I2C4 (both Audio and LCD uses it for control commands)
    - audio codec is responding but there is Little/Big endian mismatch - need to analyze
 
+# Configuring SDRAM
+
+Needed for LCD
+
+Goal is to use CubeMX to initialize SDRAM same way as in BSP
+- there are 2 SDRAM controllers (see RM0410 Rev 4, page 336)
+- from:
+
+```c
+// c:\Ac6\STM32Cube_FW_F7_V1.17.0\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery_sdram.h
+#define SDRAM_DEVICE_ADDR  ((uint32_t)0xC0000000)
+#define SDRAM_DEVICE_SIZE  ((uint32_t)0x1000000)  /* SDRAM device size in MBytes */
+
+#define SDRAM_MEMORY_WIDTH               FMC_SDRAM_MEM_BUS_WIDTH_32
+
+#define SDCLOCK_PERIOD                   FMC_SDRAM_CLOCK_PERIOD_2
+#define REFRESH_COUNT                    ((uint32_t)0x0603)   /* SDRAM refresh counter (100Mhz SD clock) */
+#define SDRAM_TIMEOUT                    ((uint32_t)0xFFFF)
+```
+So `SDRAM_DEVICE_ADDR` coresponds to SDRAM1.
+
+In CubeMX we have to use:
+- `FMC`
+-  TODO
+
+Limitations: 
+- WriteRecoveryTime - CubeMX requires >=3 while BSP uses 2
+
+We have to also configure MPU same way as in:
+```
+c:\Ac6\STM32Cube_FW_F7_V1.17.0\Projects\STM32F769I-Discovery\Examples\BSP\Src\main.
+MPU_Config();
+```
+- can be found in CubeMX under System Core -> `CORTEX_M7`
+- Why? SDRAM is configured as Write-through
+
+
+# Planned projects
+
+
 Planned projects:
 
 3. LCD Display simple demo. LCD is perfect for feedback and interactivity

@@ -21,6 +21,7 @@
 #include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
+#include "fmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -146,6 +147,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_I2C4_Init();
+  MX_FMC_Init();
   /* USER CODE BEGIN 2 */
   gUartStarted=true; // tell Error_Handler() that it can dump error on UART
   // enable LD3 Green on PA12
