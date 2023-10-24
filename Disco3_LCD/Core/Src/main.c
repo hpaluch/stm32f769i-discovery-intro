@@ -39,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define APP_VERSION 103 // 123=1.23
+#define APP_VERSION 104 // 123=1.23
 // Audio codec I2C4 slave address - from STM32Cube_FW_F7\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery.h
 #define APP_AUDIO_I2C_ADDRESS                ((uint16_t)0x34)
 // read codec ID after reset, must be 8994h
@@ -118,18 +118,23 @@ HAL_StatusTypeDef app_reset_audio(void)
 	  return HAL_OK;
 }
 
+// TODO: Once CPU Cache is enabled we have to invalidate cache at least After Write
+// and before verification
 bool app_test_sdram(int *addr, int bytes, int seed)
 {
+	uint32_t tick1,tick2,tick3;
 	int i,v;
 	int items = bytes/sizeof(int);
-	printf("TODO: L%d Test SDRAM sizeof(int)=%d start=0x%p bytes=%d items=%d seed=%d\r\n",
+
+	tick1 = HAL_GetTick();
+	printf("L%d Test SDRAM sizeof(int)=%d start_addr=%p bytes=%d items=%d seed=%d\r\n",
 			__LINE__,(int)sizeof(int),addr,bytes,items,seed);
 	srand(seed);
-	printf("L%d SDRAM test started...\r\n",__LINE__);
+	printf("- L%d SDRAM test started...\r\n",__LINE__);
 	for(i=0;i<items;i++){
 		v = rand();
 		if (i==0){
-			printf("Writing at %p: %d",addr,v);
+			printf("  - Writing at %p: %d",addr,v);
 		} else if (i >=1 && i<7){
 			printf(" %d",v);
 		} else if (i==7){
@@ -140,7 +145,9 @@ bool app_test_sdram(int *addr, int bytes, int seed)
 		}*/
 		addr[i] = v;
 	}
-	printf("L%d SDRAM - reading back data...\r\n",__LINE__);
+	tick2= HAL_GetTick();
+	printf("- L%d Write finished in %" PRIu32 " [ms]\r\n", __LINE__, tick2-tick1);
+	printf("- L%d SDRAM - reading back data...\r\n",__LINE__);
 	srand(seed); // start again same series
 	for(i=0;i<items;i++){
 		v = rand();
@@ -149,7 +156,11 @@ bool app_test_sdram(int *addr, int bytes, int seed)
 			return false;
 		}
 	}
-	printf("OK: Read data matching Written data. seed=%d\r\n",seed);
+	tick3= HAL_GetTick();
+	printf("- L%d read-back finished in %" PRIu32 " [ms]\r\n",__LINE__,tick3-tick2);
+	printf("- OK: Read data matching Written data. seed=%d\r\n",seed);
+	printf("L%d Write+Read of %d.%03d [kB] finished in %" PRIu32 " [ms]\r\n",
+			__LINE__,bytes/1000,bytes%1000,tick3-tick1);
 	return true;
 }
 
@@ -194,14 +205,16 @@ int main(void)
   gUartStarted=true; // tell Error_Handler() that it can dump error on UART
   // enable LD3 Green on PA12
   HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_RESET);
-  printf("L%d: %s init v%d.%02d\r\n", __LINE__, APP_NAME, APP_VERSION/100, APP_VERSION%100);
+  printf("\r\nL%d: %s init v%d.%02d\r\n", __LINE__, APP_NAME, APP_VERSION/100, APP_VERSION%100);
 
-  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, 32768 /*APP_SDRAM_DEVICE_SIZE*/ ,1)){
+  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, APP_SDRAM_DEVICE_SIZE ,1)){
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
 	  Error_Handler();
   }
+
   // try different seed to ensure that we are not reading old (good) data...
-  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, 32768 /*APP_SDRAM_DEVICE_SIZE*/ ,10)){
+  // make it a bit shorter...
+  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, 65536 /*APP_SDRAM_DEVICE_SIZE*/ ,10)){
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
 	  Error_Handler();
   }
@@ -213,6 +226,10 @@ int main(void)
 	  Error_Handler();
   }
 
+  printf("L%d Press Blue User button to continue to LEDs loop...\r\n",__LINE__);
+  // wait until button is pressed
+  while(HAL_GPIO_ReadPin(B_USER_GPIO_Port, B_USER_Pin)== GPIO_PIN_RESET); // NOP
+  printf("L%d button pressed - entering LEDs loop.\r\n", __LINE__);
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -148,7 +148,45 @@ So `SDRAM_DEVICE_ADDR` coresponds to SDRAM1.
 
 
 Limitations: 
-- WriteRecoveryTime - CubeMX requires >=3 while BSP uses 2
+- WriteRecoveryTime - CubeMX requires >=3 (see below)
+- but BSP Example code uses 2, see:
+  ```c
+  // c:\Ac6\STM32Cube_FW_F7_V1.17.0\Drivers\BSP\STM32F769I-Discovery\ stm32f769i_discovery_sdram.c 
+  /* Timing configuration for 100Mhz as SDRAM clock frequency (System clock is up to 200Mhz) */
+  Timing.LoadToActiveDelay    = 2;
+  Timing.ExitSelfRefreshDelay = 7;
+  Timing.SelfRefreshTime      = 4;
+  Timing.RowCycleDelay        = 7;
+  Timing.WriteRecoveryTime    = 2; // <<<<<<<=====
+  Timing.RPDelay              = 2;
+  Timing.RCDDelay             = 2;
+
+  ```
+- the constraint seems to come from here:
+  - `c:\Program Files\STMicroelectronics\STM32Cube\STM32CubeMX\db\mcu\IP\FMC-f7_fmc_v2_0_Modes.xml`
+
+  ```xml
+    <!-- FMC_SDTRx TWR -->
+    <RefParameter Comment="Write recovery time" DefaultValue="16"
+    Max="16"
+    Min="=MAX(1,MAX(SelfRefreshTime1-RCDDelay1,RowCycleDelay1-RCDDelay1-RPDelay1))" 
+    Name="WriteRecoveryTime1" Type="integer" TabName="SDRAM 1" 
+    Group="SDRAM timing in memory clock cycles">
+      <Description>Specifies the delay between a Write and a Precharge
+      command in number of memory clock cycles.&lt;br&gt;WriteRecoveryTime 
+      must satisfy the following constraints:&lt;br&gt;
+      1: WriteRecoveryTime &gt;= SelfRefreshTime - RowToColumnDelay,&lt;br&gt;
+      2: WriteRecoveryTime &gt;= RowCycleDelay - RowToColumnDelay - RowPrechargeDelay.&lt;br&gt;If two SDRAM devices are used, the FMC_SDTR1 and FMC_SDTR2 registers must be programmed with the same Write Recovery Time corresponding to the slowest SDRAM device.</Description>
+    </RefParameter>
+  ```
+- so key is expression `MAX(1,MAX(SelfRefreshTime1-RCDDelay1,RowCycleDelay1-RCDDelay1-RPDelay1))`
+- and inside  [Disco3_LCD/Disco3_LCD.ioc](Disco3_LCD/Disco3_LCD.ioc) file we can find:
+  ```
+  FMC.SelfRefreshTime1=4 FMC.RCDDelay1=2 => 4-2 = 2
+  FMC.RowCycleDelay1=7 FMC.RCDDelay1=2 FMC.RPDelay1=2 => 7-2-2=3 (!)
+  ```
+
+> Now the question is what is wrong? BSP Code or CubeMX Rule?
 
 We have to also configure MPU same way as in:
 ```
@@ -174,6 +212,10 @@ void BSP_SDRAM_Initialization_sequence(uint32_t RefreshCount)
 }
 ```
 See `Disco3_LCD/Core/Src/fmc.c` function `static void APP_BSP_SDRAM_Initialization_sequence(uint32_t RefreshCount)`
+
+Numbers:
+- Write of 16 MB SDRAM (Caches disabled) takes around 4s.
+  Read is just a bit faster.
 
 # Planned projects
 
