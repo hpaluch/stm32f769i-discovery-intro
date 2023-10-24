@@ -57,8 +57,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define APP_SDRAM_DEVICE_ADDR ((uint32_t)0xC0000000)
 #define APP_SDRAM_DEVICE_SIZE ((uint32_t)0x1000000)
+#define APP_SDRAM_DEVICE_ADDR ((uint32_t)0xC0000000)
+#define APP_LCD_FB_START_ADDRESS ((uint32_t)0xC0000000)
 #define SAI1_FSA_Pin GPIO_PIN_4
 #define SAI1_FSA_GPIO_Port GPIOE
 #define SAI1_SDB_Pin GPIO_PIN_3

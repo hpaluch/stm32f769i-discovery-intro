@@ -46,6 +46,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_dma2d.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma2d.c</locationURI>
+		</link>
+		<link>
 			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_dma_ex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c</locationURI>

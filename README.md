@@ -217,6 +217,24 @@ Numbers:
 - Write of 16 MB SDRAM (Caches disabled) takes around 4s.
   Read is just a bit faster.
 
+# Configuring LCD
+
+It is probably most difficult peripheral on board (2nd is Audio codec).
+We need to initialize (see `c:\Ac6\STM32Cube_FW_F7_V1.17.0\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery_lcd.c`):
+
+CubeMX peripherals:
+- Multimedia -> DMA2D (not required but BSP uses it)
+  - NOTE! DMA2D is different from DMA!
+- DSI PLL ititialization
+- DSI ititialization
+- LTDC ititialization
+- ~~OTM8009A~~  NT35510 LCD Display IC Driver via I2C
+
+Useful (actually independent) - touch glass covering display:
+- initialize Touch Screen (TS) - FT6206 via I2C
+- in `c:\Ac6\STM32Cube_FW_F7_V1.17.0\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery_ts.c`
+
+
 # Planned projects
 
 
