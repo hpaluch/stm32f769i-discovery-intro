@@ -220,6 +220,22 @@ Numbers:
 # Configuring LCD
 
 It is probably most difficult peripheral on board (2nd is Audio codec).
+
+However just found two important application notes:
+* [AN4860: Introduction to DSI host on STM32 MCUs and MPUs][AN4860]
+* [AN4861: LCD-TFT display controller (LTDC) on STM32 MCUs][AN4861]
+
+Especially [AN4860][AN4860] contains important chapter:
+- `6  STM32CubeMX configuration example`
+- that is for - quoting:
+
+  > The examples have been generated for the STM32F769I-Discovery board.
+
+- however please note that above example is for older `OTM8009` chip.
+- so in my case I have to carefully evaluate changes needed for 
+  my `A09` display board revision with `NT35510` chip.
+- but it is without doubt important help!
+
 We need to initialize (see `c:\Ac6\STM32Cube_FW_F7_V1.17.0\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery_lcd.c`):
 
 CubeMX peripherals:
@@ -294,6 +310,8 @@ As noted above we use external X2 High Speed Oscillator (HSE)  at 25 MHz.
 * [STM32f769NI Datasheet][STM32f769NI] Datasheet
 * [RM0410][RM0410] - ARM programmers manual
 
+[AN4860]: https://www.st.com/content/ccc/resource/technical/document/application_note/group0/c0/ef/15/38/d1/d6/49/88/DM00373474/files/DM00373474.pdf/jcr:content/translations/en.DM00373474.pdf
+[AN4861]: https://www.st.com/content/ccc/resource/technical/document/application_note/group0/25/ca/f9/b4/ae/fc/4e/1e/DM00287603/files/DM00287603.pdf/jcr:content/translations/en.DM00287603.pdf
 [STM32f769NI]: https://www.st.com/resource/en/datasheet/stm32f769ni.pdf
 [UM2033]: https://www.st.com/resource/en/user_manual/um2033-discovery-kit-with-stm32f769ni-mcu-stmicroelectronics.pdf 
 [GS32F769IDISCOVERY]: https://github.com/hpaluch/hpaluch.github.io/wiki/Getting-started-with-32F769IDISCOVERY
