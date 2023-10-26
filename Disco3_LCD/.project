@@ -56,6 +56,11 @@
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dma_ex.c</locationURI>
 		</link>
 		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_dsi.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_dsi.c</locationURI>
+		</link>
+		<link>
 			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_exti.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_exti.c</locationURI>
@@ -84,6 +89,16 @@
 			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_i2c_ex.c</name>
 			<type>1</type>
 			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_ltdc.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_ltdc.c</locationURI>
+		</link>
+		<link>
+			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_ltdc_ex.c</name>
+			<type>1</type>
+			<locationURI>PARENT-4-PROJECT_LOC/Ac6/STM32Cube/Repo/STM32Cube_FW_F7_V1.17.1/Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_ltdc_ex.c</locationURI>
 		</link>
 		<link>
 			<name>Drivers/STM32F7xx_HAL_Driver/stm32f7xx_hal_pwr.c</name>

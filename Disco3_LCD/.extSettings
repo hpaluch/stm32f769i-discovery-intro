@@ -1,0 +1,6 @@
+# .extSettings for CubeMX
+[Others]
+# required for display board, revision A09 or later
+# Note that paradoxically the REVB03 is related to B03 revision of
+# mainboard
+Define = USE_STM32F769I_DISCO_REVB03
