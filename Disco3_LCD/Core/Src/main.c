@@ -31,6 +31,7 @@
 // BSP includes
 #include "stm32f769i_discovery.h"
 #include "stm32f769i_discovery_sdram.h"
+#include "stm32f769i_discovery_lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -169,6 +170,23 @@ int main(void)
 	  Error_Handler();
   }
 
+  if (BSP_LCD_Init()!=LCD_OK){
+	  printf("ERROR: L%d BSP_LCD_Init() failed.\r\n",__LINE__);
+	  Error_Handler();
+  }
+
+  BSP_LCD_LayerDefaultInit(0, LCD_FB_START_ADDRESS);
+
+  /* Clear the LCD */
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+
+  /* Set LCD Example description */
+  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 20, (uint8_t *)"Copyright (c) STMicroelectronics 2016", CENTER_MODE);
+
+
+#if 0
   if (!app_test_sdram((int*)SDRAM_DEVICE_ADDR, SDRAM_DEVICE_SIZE ,1)){
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
 	  Error_Handler();
@@ -180,6 +198,7 @@ int main(void)
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
 	  Error_Handler();
   }
+#endif
 
   printf("L%d Press Blue User button to continue to LEDs loop...\r\n",__LINE__);
   // wait until button is pressed

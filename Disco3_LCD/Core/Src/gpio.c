@@ -89,7 +89,6 @@
      PA6   ------> ADCx_IN6
      PA5   ------> USB_OTG_HS_ULPI_CK
      PC5   ------> ETH_RXD1
-     PJ2   ------> DSIHOST_TE
      PB10   ------> USB_OTG_HS_ULPI_D3
      PH6   ------> S_TIM12_CH1
      PA3   ------> USB_OTG_HS_ULPI_D0
@@ -472,14 +471,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Alternate = GPIO_AF10_OTG_HS;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = DSIHOST_TE_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF13_DSI;
-  HAL_GPIO_Init(DSIHOST_TE_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PtPin */
   GPIO_InitStruct.Pin = ARDUINO_PWM_D6_Pin;
