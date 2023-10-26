@@ -80,7 +80,7 @@ Common project properties:
 
 Here is list of projects:
 
-Finished projects:
+## Finished: 1. GPIO LEDs and Buttons
 
 1. GPIO Tutorial - LEDs and Switch.
    Rationale: LEDs provide early feedback is system is alive and when something
@@ -94,6 +94,8 @@ Finished projects:
      - `LD_USER2` (LD2) green LED on PJ5
      - LD3 green LED on PA12 (also used for used for Arduino as `SCK/D13`)
      -`B_USER` "User & WakeUp Button" on PA0
+
+## Finished: 2. UART + printf
 
 2. UART1 Tutorial - redirect `printf(3)` to UART1 which is connected to Virtual COM port of ST-LINK.
    Rationale: UART is perfect tool for diagnostics and error messages.
@@ -121,62 +123,28 @@ Finished projects:
     when compared to other GPIO Pins - required when configured for USB).
     Thus I rather left default - `VCP_RX` without Pull-Up
 
-Projects in progress:
+## In Progress: LCD
 
-3. Requierd peripherals for LCD and Audio:
-   - I2C4 (both Audio and TouchScreen - TS use I2C4 for commands)
+LCD now works using CubeMX + BSP - however it just shows Copyright so far :-)
 
-# Configuring SDRAM
+WARNING! Works only for NT35510 (Display daughterboard revision A09 or later)
 
-Needed as graphics RAM for LCD and other stuff. SDRAM has impressive 16MB -
-frequency is limited to 200 MHz (CPU is capable of 216 MHz).
-
-SDRAM needs:
-- FMC (Flexible Memory Controller)
-- MPU (Memory protection Unit) - to configure SDRAM region and FMC registers
-
-SDRAM requires following CubeMX components
-- System Core -> `CORTEX_M7` -> MPU - defines SDRAM region and FMC region
-- Connectivity -> `FMC` -> `SDRAM 1`
-However again - I unchecked `Generate Code` in CubeMX and I'm using
-BSP methods to manage SDRAM and FMC.
-
-Numbers:
-- Write of 16 MB SDRAM (Caches disabled) takes around 4s.
-  Read is just a bit faster.
-
-# Configuring LCD
-
-It is probably most difficult peripheral on board (2nd is Audio codec).
-
-However just found two important application notes:
+Recommended for study:
 * [AN4860: Introduction to DSI host on STM32 MCUs and MPUs][AN4860]
 * [AN4861: LCD-TFT display controller (LTDC) on STM32 MCUs][AN4861]
-
-Especially [AN4860][AN4860] contains important chapter:
-- `6  STM32CubeMX configuration example`
-- that is for - quoting:
-
-  > The examples have been generated for the STM32F769I-Discovery board.
-
-- however please note that above example is for older `OTM8009` chip.
-- so in my case I have to carefully evaluate changes needed for 
-  my `A09` display board revision with `NT35510` chip.
-- but it is without doubt important help!
+# Configuring SDRAM
 
 
-We need to enable these CubeMX peripherals:
-- Multimedia -> DMA2D (not required but BSP uses it)
-  - NOTE! DMA2D is different from DMA!
-- DSI PLL ititialization
-- DSI ititialization
-- LTDC ititialization
-- ~~OTM8009A~~  NT35510 LCD Display IC Driver via I2C
+These peripherals are **enabled** under CubeMX:
+- TODO
 
-However I will use BSP routines to initialize these...
+These peripherals are **initialized** by BSP:
+- DMA2D
+- LTDC
+- DSI
+- NT35510 controller
 
-# Planned projects
-
+# Future
 
 Planned projects:
 
