@@ -1,6 +1,6 @@
-# .extSettings for CubeMX
+[ProjectFiles]
+HeaderPath=../../Drivers/BSP/STM32F769I-Discovery
+[Groups]
+Drivers/BSP/STM32F769I-Discovery=../../Drivers/BSP/STM32F769I-Discovery/stm32f769i_discovery_sdram.c
 [Others]
-# required for display board, revision A09 or later
-# Note that paradoxically the REVB03 is related to B03 revision of
-# mainboard
-Define = USE_STM32F769I_DISCO_REVB03
+Define=USE_STM32F769I_DISCO_REVB03

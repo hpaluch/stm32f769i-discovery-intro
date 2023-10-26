@@ -18,12 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "dma2d.h"
-#include "i2c.h"
-#include "ltdc.h"
 #include "usart.h"
 #include "gpio.h"
-#include "fmc.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -32,6 +28,9 @@
 #include <inttypes.h> // printf(3) format macros for stdtypes.h, for example PRIu32 to print uint32_t
 #include <stdbool.h> // bool type and true/false
 #include <machine/endian.h> // __bswap16(), __htons(), __ntohs()
+// BSP includes
+#include "stm32f769i_discovery.h"
+#include "stm32f769i_discovery_sdram.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,12 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define APP_VERSION 104 // 123=1.23
-// Audio codec I2C4 slave address - from STM32Cube_FW_F7\Drivers\BSP\STM32F769I-Discovery\stm32f769i_discovery.h
-#define APP_AUDIO_I2C_ADDRESS                ((uint16_t)0x34)
-// read codec ID after reset, must be 8994h
-#define APP_WM8994_CHIPID_ADDR                  0x00
-#define APP_EXP_WM8994_CHIPID 0x8994U
+#define APP_VERSION 105 // 123=1.23
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -81,44 +75,6 @@ static void MPU_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-// RESETS audio Codec via I2C, see datasheet WM8994_Rev4.6.pdf
-HAL_StatusTypeDef app_reset_audio(void)
-{
-	  HAL_StatusTypeDef i2cStatus;
-	  uint16_t audioI2cData;
-
-	  // RESET Audio Codec
-	  // codec Data must be always in Big-Endian = Network Order (n), using portable Host(h) to Network (n)
-	  audioI2cData = __htons(0); // defined in machine/endian.h
-	  i2cStatus = HAL_I2C_Mem_Write(&hi2c4, APP_AUDIO_I2C_ADDRESS, 0x0,
-			  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
-	  if (i2cStatus == HAL_OK){
-		  printf("OK: Audio Codec accepted reset at I2C Addr=0x%x\r\n",APP_AUDIO_I2C_ADDRESS);
-	  } else {
-		  printf("ERROR: Codec not responding at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
-		  return i2cStatus;
-	  }
-
-	  HAL_Delay(300); // unable to find what is correct timeout after RESET...
-	  // now read back Codec ID, must be 0x8994 (=WM8994)
-	  audioI2cData = 0;
-	  i2cStatus = HAL_I2C_Mem_Read(&hi2c4, APP_AUDIO_I2C_ADDRESS, APP_WM8994_CHIPID_ADDR,
-			  I2C_MEMADD_SIZE_16BIT, (uint8_t*)&audioI2cData, 2, 1000);
-	  if (i2cStatus != HAL_OK){
-		  printf("ERROR: Error reading ID from Codec at I2C Addr=0x%x HAL_ERROR=%d\r\n",APP_AUDIO_I2C_ADDRESS,i2cStatus);
-		  return i2cStatus;
-	  }
-	  // readback data must be converted back from BE (Network order - 'n') to Host-order 'h' (LE in our case)
-	  audioI2cData = __ntohs(audioI2cData);
-	  printf("Codec ID is 0x%x (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
-	  if (audioI2cData != APP_EXP_WM8994_CHIPID){
-		  printf("ERROR: Codec ID is 0x%x is wrong! (expecting 0x%x)\r\n",audioI2cData,APP_EXP_WM8994_CHIPID);
-		  return HAL_ERROR;
-	  }
-	  printf("OK: L%d audio codec WM8994 found at I2C Addr=0x%x\r\n",
-			  __LINE__,APP_AUDIO_I2C_ADDRESS);
-	  return HAL_OK;
-}
 
 // TODO: Once CPU Cache is enabled we have to invalidate cache at least After Write
 // and before verification
@@ -176,7 +132,6 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   unsigned loopCount = 0;
-  HAL_StatusTypeDef status;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -201,32 +156,28 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
-  MX_I2C4_Init();
-  MX_FMC_Init();
-  MX_DMA2D_Init();
-  MX_LTDC_Init();
   /* USER CODE BEGIN 2 */
+
   gUartStarted=true; // tell Error_Handler() that it can dump error on UART
   // enable LD3 Green on PA12
   HAL_GPIO_WritePin(LD3_GREEN_GPIO_Port, LD3_GREEN_Pin, GPIO_PIN_RESET);
   printf("\r\nL%d: %s init v%d.%02d\r\n", __LINE__, APP_NAME, APP_VERSION/100, APP_VERSION%100);
 
-  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, APP_SDRAM_DEVICE_SIZE ,1)){
+  // BSP function that initializes SDRAM & DMA1
+  if (BSP_SDRAM_Init()!=SDRAM_OK){
+	  printf("ERROR: L%d BSP_SDRAM_Init() failed.\r\n",__LINE__);
+	  Error_Handler();
+  }
+
+  if (!app_test_sdram((int*)SDRAM_DEVICE_ADDR, SDRAM_DEVICE_SIZE ,1)){
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
 	  Error_Handler();
   }
 
   // try different seed to ensure that we are not reading old (good) data...
   // make it a bit shorter...
-  if (!app_test_sdram((int*)APP_SDRAM_DEVICE_ADDR, 65536 /*APP_SDRAM_DEVICE_SIZE*/ ,10)){
+  if (!app_test_sdram((int*)SDRAM_DEVICE_ADDR, 65536 /*APP_SDRAM_DEVICE_SIZE*/ ,10)){
 	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
-	  Error_Handler();
-  }
-
-  status = app_reset_audio();
-  if (status != HAL_OK){
-	  printf("ERROR: L%d app_reset_audio() returned HAL_Status=%d !=0\r\n",
-			  __LINE__, status);
 	  Error_Handler();
   }
 
