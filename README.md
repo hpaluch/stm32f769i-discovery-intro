@@ -29,7 +29,9 @@ Since project #3 - [Disco3_LCD/](Disco3_LCD) I'm using middle way approach:
 
 Here is hardware fully managed by CubeMX:
 - GPIO LEDs, Buttons, MPU
-Hardware managed by BSP functions:
+- UART1
+
+Hardware **enabled** in CubeMX but **managed** by BSP functions:
 - SDRAM
 - DMA1 (configured by BSP SDRAM routines)
 
