@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdlib.h> // rand(3), srand(3)...
 #include <stdio.h> // printf(3) redirected to UART1, ST-Link Virtual COM port
+#include <string.h> // snprintf(3)
 #include <inttypes.h> // printf(3) format macros for stdtypes.h, for example PRIu32 to print uint32_t
 #include <stdbool.h> // bool type and true/false
 #include <machine/endian.h> // __bswap16(), __htons(), __ntohs()
@@ -61,9 +62,11 @@ bool gUartStarted=false;
 void SystemClock_Config(void);
 static void MPU_Initialize(void);
 static void MPU_Config(void);
+// from: STM32Cube_FW_F7_V1.17.1\Projects\STM32F769I-Discovery\Examples\ADC\ADC_TemperatureSensor\Src\main.c
+static void LCD_Config(void);
 /* USER CODE BEGIN PFP */
 // Redirecting printf(3) to UART1 that is connected to ST-Link Virtual COM port
-// from: STM32Cube_FW_F7_V1.17.0\Projects\STM32F767ZI-Nucleo\Examples\UART\UART_Printf\Src\main.c
+// from: STM32Cube_FW_F7_V1.17.1\Projects\STM32F767ZI-Nucleo\Examples\UART\UART_Printf\Src\main.c
 #ifdef __GNUC__
 /* With GCC, small printf (option LD Linker->Libraries->Small printf
    set to 'Yes') calls __io_putchar() */
@@ -76,53 +79,6 @@ static void MPU_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-
-// TODO: Once CPU Cache is enabled we have to invalidate cache at least After Write
-// and before verification
-bool app_test_sdram(int *addr, int bytes, int seed)
-{
-	uint32_t tick1,tick2,tick3;
-	int i,v;
-	int items = bytes/sizeof(int);
-
-	tick1 = HAL_GetTick();
-	printf("L%d Test SDRAM sizeof(int)=%d start_addr=%p bytes=%d items=%d seed=%d\r\n",
-			__LINE__,(int)sizeof(int),addr,bytes,items,seed);
-	srand(seed);
-	printf("- L%d SDRAM test started...\r\n",__LINE__);
-	for(i=0;i<items;i++){
-		v = rand();
-		if (i==0){
-			printf("  - Writing at %p: %d",addr,v);
-		} else if (i >=1 && i<7){
-			printf(" %d",v);
-		} else if (i==7){
-			printf("...\r\n");
-		} /* else { // noisy
-			printf(" i=%d",i);
-			fflush(stdout);
-		}*/
-		addr[i] = v;
-	}
-	tick2= HAL_GetTick();
-	printf("- L%d Write finished in %" PRIu32 " [ms]\r\n", __LINE__, tick2-tick1);
-	printf("- L%d SDRAM - reading back data...\r\n",__LINE__);
-	srand(seed); // start again same series
-	for(i=0;i<items;i++){
-		v = rand();
-		if (addr[i]!=v){
-			printf("ERROR: Data at %p: %d <> %d\r\n",addr+i,addr[i],v);
-			return false;
-		}
-	}
-	tick3= HAL_GetTick();
-	printf("- L%d read-back finished in %" PRIu32 " [ms]\r\n",__LINE__,tick3-tick2);
-	printf("- OK: Read data matching Written data. seed=%d\r\n",seed);
-	printf("L%d Write+Read of %d.%03d [kB] finished in %" PRIu32 " [ms]\r\n",
-			__LINE__,bytes/1000,bytes%1000,tick3-tick1);
-	return true;
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -133,6 +89,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
   unsigned loopCount = 0;
+  char buf[128] = {0,};
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -170,40 +127,8 @@ int main(void)
 	  Error_Handler();
   }
 
-  if (BSP_LCD_Init()!=LCD_OK){
-	  printf("ERROR: L%d BSP_LCD_Init() failed.\r\n",__LINE__);
-	  Error_Handler();
-  }
-
-  BSP_LCD_LayerDefaultInit(0, LCD_FB_START_ADDRESS);
-
-  /* Clear the LCD */
-  BSP_LCD_Clear(LCD_COLOR_WHITE);
-
-  /* Set LCD Example description */
-  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
-  BSP_LCD_SetFont(&Font12);
-  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 20, (uint8_t *)"Copyright (c) STMicroelectronics 2016", CENTER_MODE);
-
-
-#if 0
-  if (!app_test_sdram((int*)SDRAM_DEVICE_ADDR, SDRAM_DEVICE_SIZE ,1)){
-	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
-	  Error_Handler();
-  }
-
-  // try different seed to ensure that we are not reading old (good) data...
-  // make it a bit shorter...
-  if (!app_test_sdram((int*)SDRAM_DEVICE_ADDR, 65536 /*APP_SDRAM_DEVICE_SIZE*/ ,10)){
-	  printf("ERROR: L%d app_test_sdram() failed.\r\n",__LINE__);
-	  Error_Handler();
-  }
-#endif
-
-  printf("L%d Press Blue User button to continue to LEDs loop...\r\n",__LINE__);
-  // wait until button is pressed
-  while(HAL_GPIO_ReadPin(B_USER_GPIO_Port, B_USER_Pin)== GPIO_PIN_RESET); // NOP
-  printf("L%d button pressed - entering LEDs loop.\r\n", __LINE__);
+  // initialize LCD using BSP and draw static texts
+  LCD_Config();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -212,6 +137,10 @@ int main(void)
   {
 	// try to not overflow UART output - once per second is enough.
 	if (loopCount%10 == 0){
+	    snprintf(buf,sizeof(buf),"#%u HAL_Ticks=%" PRIu32, loopCount, HAL_GetTick());
+	    BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 45, (uint8_t *)buf, CENTER_MODE);
+	    BSP_LCD_ClearStringLine(30);
+
 		printf("L%d: #%u HAL_Ticks=%" PRIu32 "\r\n",
 				 __LINE__,loopCount,HAL_GetTick());
 	}
@@ -303,6 +232,53 @@ PUTCHAR_PROTOTYPE
   HAL_UART_Transmit(&huart1, (uint8_t *)&ch, 1, 0xFFFF);
   return ch;
 }
+
+// from STM32Cube_FW_F7_V1.17.1\Projects\STM32F769I-Discovery\Examples\ADC\ADC_TemperatureSensor\Src\main.c
+/**
+  * @brief  Configure the LCD for display.
+  * @param  None
+  * @retval None
+  */
+static void LCD_Config(void)
+{
+  uint32_t  lcd_status = LCD_OK;
+  char title[64] = {0,};
+
+  /* Initialize the LCD */
+  lcd_status = BSP_LCD_Init();
+  if(lcd_status != LCD_OK){
+	  printf("ERROR: L%d BSP_LCD_Init() failed.\r\n",__LINE__);
+	  Error_Handler();
+  }
+
+  BSP_LCD_LayerDefaultInit(0, LCD_FB_START_ADDRESS);
+
+  /* Clear the LCD */
+  BSP_LCD_Clear(LCD_COLOR_WHITE);
+
+  /* Set LCD Example description */
+  BSP_LCD_SetTextColor(LCD_COLOR_DARKBLUE);
+  BSP_LCD_SetFont(&Font12);
+  BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()- 20, (uint8_t *)"Copyright (c) Henryk and STMicroelectronics 2023", CENTER_MODE);
+  BSP_LCD_SetTextColor(LCD_COLOR_BLUE);
+  BSP_LCD_FillRect(0, 0, BSP_LCD_GetXSize(), 120);
+  BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+  BSP_LCD_SetBackColor(LCD_COLOR_BLUE);
+  BSP_LCD_SetFont(&Font24);
+
+  snprintf(title,sizeof(title),"%s v%d.%02d", APP_NAME, APP_VERSION/100, APP_VERSION%100);
+
+  BSP_LCD_DisplayStringAt(0, 10, (uint8_t *)title, CENTER_MODE);
+  BSP_LCD_SetFont(&Font16);
+  BSP_LCD_DisplayStringAt(0, 60, (uint8_t *)"This example shows how to configure LCD", CENTER_MODE);
+  BSP_LCD_DisplayStringAt(0, 75, (uint8_t *)"using both CubeMX and BSP library.", CENTER_MODE);
+
+  BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+  BSP_LCD_SetBackColor(LCD_COLOR_WHITE);
+  BSP_LCD_SetFont(&Font24);
+}
+
+
 /* USER CODE END 4 */
 
 /* MPU Configuration */

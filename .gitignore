@@ -5,3 +5,4 @@
 .settings/
 Debug/
 *.launch
+.mxproject

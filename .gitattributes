@@ -10,3 +10,4 @@
 /Disco2_UART/Core/Src/sysmem.c text eol=lf
 /Disco3_LCD//Core/Src/syscalls.c text eol=lf
 /Disco3_LCD/Core/Src/sysmem.c text eol=lf
+*.jpg filter=lfs diff=lfs merge=lfs -text

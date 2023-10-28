@@ -1,39 +1,27 @@
 # STM32F769I Discovery Intro
 
-Here I plan to make set of projects for [32F769IDISCOVERY Discovery kit][32F769IDISCOVERY]
-with the final goal being able to use LCD, Audio Codec and accessories (SD card, external Flash, SDRAM and others)
+Here are examples how to utilize both [CubeMX][CubeMX] and BSP libraries for
+[32F769IDISCOVERY Discovery kit][32F769IDISCOVERY] to be able to use LCD
+display and other board peripherals with least amount of work.
 
-If you are new to [32F769IDISCOVERY Discovery kit][32F769IDISCOVERY] I suggest
-reading [Getting started with STM 32F769IDISCOVERY][GS32F769IDISCOVERY] first.
+Below is image of 3rd project [Disco3_LCD/](Disco3_LCD/) - which is 1st one
+that uses LCD display:
 
-CubeMX vs LCD Examples:
+![Disco3_LCD example](assets/disco3_lcd_ex.jpg)
 
-Unfortunately just found that existing LCD Examples are not supported by CubeMX as shown below:
+It is not as easy as you may expect because official firmware examples
+are NOT [CubeMX][CubeMX] compatible as can be seen below:
 
 ![LCD Examples incompatible with CubeMX](https://github.com/hpaluch/hpaluch.github.io/wiki/files/stm32/cubemx-lcd-ex-incompat.jpg)
 
-Details can be found on [My Wiki page](https://github.com/hpaluch/hpaluch.github.io/wiki/Getting-started-with-32F769IDISCOVERY#cubemx-warning).
+However I have found relatively simple workaround:
+1. Use [CubeMX][CubeMX] to **enable** all needed peripherals (required to enable
+   configuration of Clocks).
+1. Set "Do not Generate Code" for peripherals that will
+   be **initialized** and **managed** using BSP library.
 
-It means that I have to choice one of:
-
-1. clone example code, but add/or modify all hardware components manually
-2. use CubeMX but duplicate BSP code for LCD and possibly other components (LCD, Audio,...)
-
-Since project #3 - [Disco3_LCD/](Disco3_LCD) I'm using middle way approach:
-- I enable all used peripherals in CubeMX - that is required for Clock configuration
-  and other stuff
-- However for initialization and API I use BSP routines. You can see it
-  in CubeMX -> Project Manager -> Advanced Settings where I simply
-  unchecked `Generate Code` for all hardware that is initialized by BSP.
-- BSP headers and modules are included using [Disco3_LCD/.extSettings](Disco3_LCD/.extSettings)
-
-Here is hardware fully managed by CubeMX:
-- GPIO LEDs, Buttons, MPU
-- UART1
-
-Hardware **enabled** in CubeMX but **managed** by BSP functions:
-- SDRAM
-- DMA1 (configured by BSP SDRAM routines)
+NOTE: If you are new to [32F769IDISCOVERY Discovery kit][32F769IDISCOVERY] I suggest
+reading [Getting started with STM 32F769IDISCOVERY][GS32F769IDISCOVERY] first.
 
 # Requirements
 
@@ -43,7 +31,6 @@ Required hardware:
   - tested LCD daughterboard: `MB1166-DEFAULT-A09`
 * USB A to Micro-B cable for Programming board and for Power (Power switch in `stlink` mode tested)
   (cable is not included with board)
-* for some project MicroSD card needed (will be refined later)
 
 Required software:
 * [STM32CubeMX][STM32CubeMX] tested v6.9.2 - code generator - all projects here are generated with this tool
@@ -59,14 +46,24 @@ NOTE: When you run STM32CubeMX for the first time you have to:
 - try to use target folder `c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1` otherwise
   you will have issues when building my projects under  STM32CubeIDE.
 
-WARNING! For Disco3_LCD and more recent projects I use relative
-Firemware folders where possible. You therefore need to
-copy content of `c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1\Drivers`
-to parent directory `..\`. So there will exist folder `..\Drivers`
+IMPORTANT!
 
-WARNING! Despite my best efforts the CubeIDE file [Disco3_LCD/.cproject](Disco3_LCD/.cproject)
-still containts absolute include paths, although the [Disco1_GPIO/Disco1_GPIO.ioc](Disco1_GPIO/Disco1_GPIO.ioc) uses properly relative firmware path. I think that it is bug
-in CubeMX.
+Starting with `Disco3_LCD` examples you need to copy portion
+of STM32F7 firmware to **parent** directory of this project:
+- if you have firmware in directory `c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1\`
+- you need to copy its `\Drivers` and `\Utilities` directory
+  to parent directory of this project so `..\Drivers` and `..\Utilities`
+  are available
+
+Although CubeMX files `*.ioc` and `.extSettings` use only relative
+paths, the generated CubeIDE files - `.cproject` still contain
+**Absolute pathnames**.  So this is valid:
+
+* If your firmware is in other directory than `c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1\` you will need to regenerated CubeIDE files from CubeMX
+  for `Disco1_GPIO/` and `Disco2_UART/` projects.
+* If you checked out this project to different directory from `c:\projects\STM32F7\stm32f769i-discovery-intro\` you will need to use CubeMX to regenerate
+  CubeIDE files for `Disco3_LCD` project.
+
 
 # Projects
 
@@ -123,36 +120,22 @@ Here is list of projects:
     when compared to other GPIO Pins - required when configured for USB).
     Thus I rather left default - `VCP_RX` without Pull-Up
 
-## In Progress: LCD
+## Working: 3. LCD
 
-LCD now works using CubeMX + BSP - however it just shows Copyright so far :-)
+LCD project (`Disco3_LCD`) now works. However I plan to 
+tune some details.
 
 WARNING! Works only for NT35510 (Display daughterboard revision A09 or later)
 
 Recommended for study:
 * [AN4860: Introduction to DSI host on STM32 MCUs and MPUs][AN4860]
 * [AN4861: LCD-TFT display controller (LTDC) on STM32 MCUs][AN4861]
-# Configuring SDRAM
-
-
-These peripherals are **enabled** under CubeMX:
-- TODO
-
-These peripherals are **initialized** by BSP:
-- DMA2D
-- LTDC
-- DSI
-- NT35510 controller
 
 # Future
 
 Planned projects:
 
-3. LCD Display simple demo. LCD is perfect for feedback and interactivity
 4. Audio setup: will be used for demos
-
-But it will be challenging to use CubeMX for it, because existing LCD examples
-are not compatible with CubeMX and they use BSP routines that often clashes with CubeMX.
 
 # Notes
 
