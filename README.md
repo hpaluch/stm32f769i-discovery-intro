@@ -1,6 +1,6 @@
 # STM32F769I Discovery Intro
 
-Here are examples how to utilize both [CubeMX][CubeMX] and BSP libraries for
+Here are examples how to utilize both [CubeMX][STM32CubeMX] and BSP libraries for
 [32F769IDISCOVERY Discovery kit][32F769IDISCOVERY] to be able to use LCD
 display and other board peripherals with least amount of work.
 
@@ -10,12 +10,12 @@ that uses LCD display:
 ![Disco3_LCD example](assets/disco3_lcd_ex.jpg)
 
 It is not as easy as you may expect because official firmware examples
-are NOT [CubeMX][CubeMX] compatible as can be seen below:
+are NOT [CubeMX][STM32CubeMX] compatible as can be seen below:
 
 ![LCD Examples incompatible with CubeMX](https://github.com/hpaluch/hpaluch.github.io/wiki/files/stm32/cubemx-lcd-ex-incompat.jpg)
 
 However I have found relatively simple workaround:
-1. Use [CubeMX][CubeMX] to **enable** all needed peripherals (required to enable
+1. Use [CubeMX][STM32CubeMX] to **enable** all needed peripherals (required to enable
    configuration of Clocks).
 1. Set "Do not Generate Code" for peripherals that will
    be **initialized** and **managed** using BSP library.
@@ -44,7 +44,8 @@ NOTE: When you run STM32CubeMX for the first time you have to:
 - expand `STM32F7`
 - select and install `STM32Cube MCU Package for STM32F7 Series` version 1.17.1
 - try to use target folder `c:\Ac6\STM32Cube\Repo\STM32Cube_FW_F7_V1.17.1` otherwise
-  you will have issues when building my projects under  STM32CubeIDE.
+  you will have to regenerate STM32CubeIDE files from CubeMX to update
+  absolute paths in CubeIDE files (they are always absolute)
 
 IMPORTANT!
 
@@ -63,7 +64,6 @@ paths, the generated CubeIDE files - `.cproject` still contain
   for `Disco1_GPIO/` and `Disco2_UART/` projects.
 * If you checked out this project to different directory from `c:\projects\STM32F7\stm32f769i-discovery-intro\` you will need to use CubeMX to regenerate
   CubeIDE files for `Disco3_LCD` project.
-
 
 # Projects
 
