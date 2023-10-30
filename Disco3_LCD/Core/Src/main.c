@@ -42,7 +42,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define APP_VERSION 105 // 123=1.23
+#define APP_VERSION 106 // 123=1.23
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
