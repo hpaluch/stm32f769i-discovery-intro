@@ -90,6 +90,8 @@ int main(void)
   /* USER CODE BEGIN 1 */
   unsigned loopCount = 0;
   char buf[128] = {0,};
+  int oldBufLen=0,newBufLen;
+  sFONT *pFontInfo;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -129,6 +131,15 @@ int main(void)
 
   // initialize LCD using BSP and draw static texts
   LCD_Config();
+  pFontInfo = BSP_LCD_GetFont();
+  if (pFontInfo == NULL){
+	  printf("ERROR: L%d BSP_LCD_GetFont() returned NULL!\r\n",__LINE__);
+	  Error_Handler();
+  }
+  printf("L%d: Configured LCD Display WxH = %" PRIu32 "x%" PRIu32
+		 " Font HxW = %" PRIu16 "x%" PRIu16 "\r\n",
+		  __LINE__,BSP_LCD_GetXSize(), BSP_LCD_GetYSize(),
+		  pFontInfo->Height, pFontInfo->Width);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -138,8 +149,18 @@ int main(void)
 	// try to not overflow UART output - once per second is enough.
 	if (loopCount%10 == 0){
 	    snprintf(buf,sizeof(buf),"#%u HAL_Ticks=%" PRIu32, loopCount, HAL_GetTick());
+
+	    newBufLen = strlen(buf);
+	    if (newBufLen < oldBufLen){
+		    // These 3 commands below are required only when new text is shorter than old text.
+		    // They will clear full width of text line
+		    BSP_LCD_SetTextColor(LCD_COLOR_WHITE);
+		    BSP_LCD_FillRect(0,BSP_LCD_GetYSize()/2 + 45, BSP_LCD_GetXSize(), pFontInfo->Height);
+		    BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
+	    }
+	    oldBufLen = newBufLen;
+
 	    BSP_LCD_DisplayStringAt(0, BSP_LCD_GetYSize()/2 + 45, (uint8_t *)buf, CENTER_MODE);
-	    BSP_LCD_ClearStringLine(30);
 
 		printf("L%d: #%u HAL_Ticks=%" PRIu32 "\r\n",
 				 __LINE__,loopCount,HAL_GetTick());
